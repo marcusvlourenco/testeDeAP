@@ -1,4 +1,6 @@
 <?php     //é recebido tanto da pagina inserir.php como de testar.php os valores dos inputs, que preencheram com valor as váriaveis
+    $tamanho=100;
+    $base='Z';
     $virgula = ",";
     $vazio="";
     $alfabetoForm = filter_input(INPUT_POST, 'alfabetoFinal');
@@ -30,7 +32,7 @@
             }            
         }                             
         if($palavraReturn==0){//caso passou no teste, sera executado a funcao que verifica se é possivel a palavra dentro da descricao formal
-            testeAFD($alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidaePalavra);//com o envio, é chamado a funcao de teste do AFD, que envia os dados recebido para a funcao
+            testeAP($tamanho, $base, $alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidaePalavra);//com o envio, é chamado a funcao de teste do AFD, que envia os dados recebido para a funcao
         }    
     } else {   //quando executa a primeira vez a pagina, vem para essa parte da pagina
         $contFT=0;
@@ -63,6 +65,41 @@
             return 0;
         }
     }    
+    
+    function testeAP ($tamanho, $base, $alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidaePalavra){
+        $estadoAtual=$estadoInicial;//ok
+        $pilha = new \Ds\Stack();//ok  
+        $pilha->allocate($tamanho);//ok
+        $pilha->push($base);//ok coloca item na pilha
+        /*
+        $pilhaVazia=var_dump($pilha->isEmpty());//ok, se pilha for vasia: true ou false
+        $pilha->clear();//limpa a pilha
+        var_dump($pilha->capacity());//mostra a capacidade da pilha
+        var_dump($pilha->pop());//retira item da pilha
+        var_dump($pilha->peek());//valor do topo da pilha, só pra ver, nao desempilha
+        */
+        $simboloAtual=current($palavra);
+        for($i=0;$i<$quantidaePalavra;$i++){
+            $j= array_search($estadoAtual, $estados);
+            $k= array_search($simboloAtual, $alfabeto);
+            $estadoTransicao=$funcaoTransicao[$j][$k];
+            if($estadoTransicao){
+                $estadoAtual=$estadoTransicao;
+                $simboloAtual=next($palavra);
+            }else{
+                echo "<script>alert('REJEITA');</script>";
+                return;
+            }
+        }
+        if(in_array($estadoAtual, $estadosFinal)){
+            echo "<script>alert('ACEITA');</script>";
+            return;
+        } else {//senao, rejeita
+            echo "<script>alert('REJEITA');</script>";
+            return;            
+        }        
+    }
+    
     function testeAFD ($alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidaePalavra){//funcao de teste do afd, melhor dizendo, testa a palavra
         $estadoAtual=$estadoInicial;//recebe valor do estado inicial no estado atual
         $simboloAtual=current($palavra);//recebe o primeiro simbolo, armazenando em simboloatual
