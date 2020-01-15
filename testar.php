@@ -20,10 +20,10 @@
             }               
         } 
         $palavra =str_split(filter_input(INPUT_POST, 'palavra'));//valor recebido do form para a palavra
-        $quantidaePalavra=count($palavra);   //funcao faz a contagem da quantidade de palavras  
+        $quantidadePalavra=count($palavra);   //funcao faz a contagem da quantidade de palavras  
         $simboloTeste= current($palavra); //aponta para o primeiro valor da array
         $palavraReturn=0;
-        for($i=0;$i<$quantidaePalavra;$i++){//percorre cada simbolo da palavra
+        for($i=0;$i<$quantidadePalavra;$i++){//percorre cada simbolo da palavra
             $palavraReturn=testePalavra($simboloTeste, $alfabeto);//para testar se a palavra esta no alfabeto, retornando valor de teste
             if($palavraReturn==0){
                 $simboloTeste= next($palavra);//se 0, continua o teste ate a ultima palavta
@@ -32,7 +32,7 @@
             }            
         }                             
         if($palavraReturn==0){//caso passou no teste, sera executado a funcao que verifica se é possivel a palavra dentro da descricao formal
-            testeAP($tamanho, $base, $alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidaePalavra);//com o envio, é chamado a funcao de teste do AFD, que envia os dados recebido para a funcao
+            testeAP($tamanho, $base, $alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidadePalavra);//com o envio, é chamado a funcao de teste do AFD, que envia os dados recebido para a funcao
         }    
     } else {   //quando executa a primeira vez a pagina, vem para essa parte da pagina
         $contFT=0;
@@ -66,7 +66,7 @@
         }
     }    
     
-    function testeAP ($tamanho, $base, $alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidaePalavra){
+    function testeAP ($tamanho, $base, $alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidadePalavra){
         $estadoAtual=$estadoInicial;//ok
         $pilha = new \Ds\Stack();//ok  
         $pilha->allocate($tamanho);//ok
@@ -79,7 +79,26 @@
         var_dump($pilha->peek());//valor do topo da pilha, só pra ver, nao desempilha
         */
         $simboloAtual=current($palavra);
-        for($i=0;$i<$quantidaePalavra;$i++){
+        for($i=0;$i<$quantidadePalavra;$i++){
+            if($funcaoTransicao){
+                $estadoAtual=[$estadoAtual,$i,$topoDaPilha];
+                $pilha->pop();
+                $pilha->push($estadoAtual);                
+            }else{
+                echo "<script>alert('REJEITA');</script>";
+                return;                
+            }
+        }    
+        if($pilha->isEmpty()){
+            echo "<script>alert('ACEITA');</script>";
+            return;
+        }else{
+            echo "<script>alert('REJEITA');</script>";
+            return;
+        }      
+            
+            
+            /*
             $j= array_search($estadoAtual, $estados);
             $k= array_search($simboloAtual, $alfabeto);
             $estadoTransicao=$funcaoTransicao[$j][$k];
@@ -89,21 +108,13 @@
             }else{
                 echo "<script>alert('REJEITA');</script>";
                 return;
-            }
-        }
-        if(in_array($estadoAtual, $estadosFinal)){
-            echo "<script>alert('ACEITA');</script>";
-            return;
-        } else {//senao, rejeita
-            echo "<script>alert('REJEITA');</script>";
-            return;            
-        }        
+            }*/          
     }
     
-    function testeAFD ($alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidaePalavra){//funcao de teste do afd, melhor dizendo, testa a palavra
+    function testeAFD ($alfabeto, $estadoInicial, $estadosFinal, $palavra, $funcaoTransicao, $estados, $quantidadePalavra){//funcao de teste do afd, melhor dizendo, testa a palavra
         $estadoAtual=$estadoInicial;//recebe valor do estado inicial no estado atual
         $simboloAtual=current($palavra);//recebe o primeiro simbolo, armazenando em simboloatual
-        for($i=0;$i<$quantidaePalavra;$i++){//laco que percorre cada simbolo da palavra inserida
+        for($i=0;$i<$quantidadePalavra;$i++){//laco que percorre cada simbolo da palavra inserida
             $j= array_search($estadoAtual, $estados);//funcao recebe o indice do array que se encontra o estado atual dentro da lista de estados
             $k= array_search($simboloAtual, $alfabeto);//mesma funcao para achar indice do simbolo atual dentro do alfabeto
             $estadoTransicao=$funcaoTransicao[$j][$k];//estadoTransicao recebe valor da funcaoTransicao onde o estado atual recebe o simbolo da palavra e mostra o estado que irá
