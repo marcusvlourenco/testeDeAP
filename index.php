@@ -2,7 +2,7 @@
     echo '<!DOCTYPE html>';
     echo '<html lang="pt">';
     echo '<head> <!-- Cabeçalho -->';
-    echo '<title>AFD - Trabalho</title>';
+    echo '<title>AP - Trabalho</title>';
     echo '<meta charset="utf-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
     echo '<link href="arquivos/css/bootstrap.css" rel="stylesheet" type="text/css"/>';
