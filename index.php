@@ -35,9 +35,9 @@
     echo '</div>';
     echo '</div>';
     echo '<div class="col-sm-2 sidenav">';
-    echo '<img  id="myImg" src="arquivos/img/maquinas-e-linguagens-300x236.gif" alt="Máquinas"  style="width:100%;max-width:200px"/>';
-    echo '</br></br></br></br></br></br></br></br>';
-    echo '<img id="myImg2" alt="difícil entender..." src="arquivos/img/site.jpg"  style="width:100%;max-width:200px"/>';
+    echo '</br></br></br><img  id="myImg" src="arquivos/img/images.jpg" alt="Pilhas..."  style="width:100%;max-width:200px"/>';
+    echo '</br></br></br></br></br></br>';
+    echo '<img id="myImg2" alt="...autônomas" src="arquivos/img/images.png"  style="width:100%;max-width:200px"/>';
     echo '</div>';
     echo '</div>';
     echo '</div>';
@@ -48,7 +48,7 @@
     echo '<div id="caption"></div>';
     echo '</div>';
     echo '<footer class="container text-center">';
-    echo '"O povo nem sabe que não sabe" - <i>Noam Chomsky.<i/>';
+    echo '"Não devemos procurar heróis, devemos procurar boas ideias." - <i>Noam Chomsky.<i/>';
     echo '</footer>';
     echo '</body>';
     echo '</html>';
