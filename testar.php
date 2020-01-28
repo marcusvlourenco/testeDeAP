@@ -1,42 +1,35 @@
 <?php     //é recebido tanto da pagina inserir.php como de testar.php os valores dos inputs, que preencheram com valor as váriaveis
-
     class stack{
-        private $arr=array();
-        
+        private $arr=array();        
         public function push($s){
             $this->arr[]=$s;
-        }
-        
+        }        
         public function pop(){
             return array_pop($this->arr);
-        }
-        
+        }        
         public function peek(){
             return end($this->arr);            
-        }
-        
+        }        
         public function isEmpty(){
             return empty($this->arr);
         }
-              
-        
-        
     }
-
     $virgula = ",";
     $vazio="";
     $alfabetoForm = filter_input(INPUT_POST, 'alfabetoFinal');
     $estadosForm = filter_input(INPUT_POST, 'estadosFinal');
     $estadoInicialForm = filter_input(INPUT_POST, 'estadoIFinal');
-    $simbolosAuxiliaresForm = filter_input(INPUT_POST, 'simbolosAFinal');
     $baseForm = filter_input(INPUT_POST, 'baseFinal');
+    $simbolosAuxiliaresForm = filter_input(INPUT_POST, 'simbolosAFinal');
     $quantidadeTForm = filter_input(INPUT_POST, 'quantidadeTFinal');
+    $quantSAForm = filter_input(INPUT_POST, 'quantSAFinal');
     $alfabeto = str_split(str_replace($virgula, $vazio, $alfabetoForm));//como foi inserido virgula, essa função a retira e tambem gera um array com str_split
     $estados = str_split(str_replace($virgula, $vazio, $estadosForm), 2);//essa função armazena a cada 2 digitos o valor em uma posição do array, como estados[0]=S0, estados[1]=S1
-    $simbolosA = str_split(str_replace($virgula, $vazio, $simbolosAuxiliaresForm), 1);
     $estadoInicial = $estadoInicialForm;
-    $quantidadeT = $quantidadeTForm;
     $base = $baseForm;
+    $simbolosA = str_split(str_replace($virgula, $vazio, $simbolosAuxiliaresForm), 1);
+    $quantidadeT = $quantidadeTForm;
+    $quantSA = $quantSAForm;    
     $quantidadeSimbolosAlfabeto=count($alfabeto);//conta quantos simbolos há no alfabeto
     $quantidadeEstados=count($estados);
     if(isset($_POST['testePalavra'])){//so é executado se a pagina for carregada do post do form para receber palavra 
@@ -50,7 +43,7 @@
         $simboloTeste= current($palavra); //aponta para o primeiro valor da array
         $palavraReturn=0;
         for($i=0;$i<$quantidadePalavra;$i++){//percorre cada simbolo da palavra
-            $palavraReturn=testePalavra($simboloTeste, $alfabeto);//para testar se a palavra esta no alfabeto, retornando valor de teste
+            $palavraReturn=testeSimboloPalavra($simboloTeste, $alfabeto);//para testar se a palavra esta no alfabeto, retornando valor de teste
             if($palavraReturn==0){
                 $simboloTeste= next($palavra);//se 0, continua o teste ate a ultima palavta
             }else{
@@ -58,7 +51,9 @@
             }            
         }                             
         if($palavraReturn==0){//caso passou no teste, sera executado a funcao que verifica se é possivel a palavra dentro da descricao formal
-            testeAP($base, $estadoInicial, $palavra, $funcaoTransicao, $quantidadePalavra, $quantidadeT);//com o envio, é chamado a funcao de teste do AFD, que envia os dados recebido para a funcao 
+            //testeAP($base, $estadoInicial, $palavra, $funcaoTransicao, $quantidadePalavra, $quantidadeT);//com o envio, é chamado a funcao de teste do AFD, que envia os dados recebido para a funcao 
+            testePalavraAP($base,$estadoInicial,$quantidadePalavra,$palavra,$funcaoTransicao,$quantidadeT);
+            
         }    
     } else {   //quando executa a primeira vez a pagina, vem para essa parte da pagina
         for($i = 0; $i < $quantidadeT; $i++){//esse loop recebe de forma dinamica os valores de cada input do FT
@@ -67,7 +62,7 @@
             }               
         } 
     }    
-    function testePalavra($simboloTeste, $alfabeto){//essa funcao verifica se o simbolo da palavra existe dentro do alfabeto
+    function testeSimboloPalavra($simboloTeste, $alfabeto){//essa funcao verifica se o simbolo da palavra existe dentro do alfabeto
         if (!(in_array($simboloTeste, $alfabeto))) { 
             echo "<script>alert('REJEITADA PALAVRA INSERIDA, NÃO EXISTE ALGUM SIMBOLO NO ALFABETO!');</script>";
             return 1;
@@ -75,19 +70,72 @@
             return 0;
         }
     }    
-    function estadoTransicao($estadoAtual,$TopoDaPilha, $i,$funcaoTransicao ,$quantidadeT){//funcao busca o resultado da funcao de transicao e retorna
+    function estadoTransicao($estadoAtual,$topoDaPilha, $i,$funcaoTransicao ,$quantidadeT){//funcao busca o resultado da funcao de transicao e retorna
         for($j=0;$j<$quantidadeT;$j++){
-            if(($funcaoTransicao[$j][0]==$estadoAtual)&&($funcaoTransicao[$j][1]==$i)&&($funcaoTransicao[$j][2]==$TopoDaPilha)){                
+            if(($funcaoTransicao[$j][0]==$estadoAtual)&&($funcaoTransicao[$j][1]==$i)&&($funcaoTransicao[$j][2]==$topoDaPilha)){                
                 $aux[0]=$funcaoTransicao[$j][3];              
                 $aux[1]=$funcaoTransicao[$j][4];
                 return $aux;                
             }            
         }        
+    } 
+    function transicao($estadoAtual,$i,$topoDaPilha,$quantidadeT,$funcaoTransicao){
+        
+        for($j=0;$j<$quantidadeT;$j++){
+            if(($funcaoTransicao[$j][0]==$estadoAtual)&&($funcaoTransicao[$j][1]==$i)&&($funcaoTransicao[$j][2]==$topoDaPilha)){
+                
+                return $j;                
+            }
+        }
+        
+        for($j=0;$j<$quantidadeT;$j++){
+            if(($funcaoTransicao[$j][0]==$estadoAtual)&&($funcaoTransicao[$j][1]==$i)&&($funcaoTransicao[$j][2]=='λ')){
+                return $j;
+            }
+        }
+        return -1;     
+    }
+
+
+    function testePalavraAP($base,$estadoInicial,$quantidadePalavra,$palavra,$funcaoTransicao,$quantidadeT){
+        $pilha = new stack();
+        $estadoAtual=$estadoInicial;//Estado atual recebe o estado incial
+        $pilha->push($base);// coloca a base na pilha, no topo 
+        $topoDaPilha=$pilha->peek();//insere o topo da pilha no topoDaPilha  
+        $i=$palavra[0]; // $i recebe a primeira letra da palavra a ser testada
+        for($m=0;$m<$quantidadePalavra;$m++){//Para i variar do simbolo incial ate o simbolo final 
+            if(transicao($estadoAtual,$i,$topoDaPilha,$quantidadeT,$funcaoTransicao)!=-1){   
+                $j=transicao($estadoAtual,$i,$topoDaPilha,$quantidadeT,$funcaoTransicao);
+                $estadoAtual=$funcaoTransicao[$j][3];
+                if($funcaoTransicao[$j][2]<>'λ'){
+                    $pilha->pop();//retira item da pilha                    
+                } 
+                if($funcaoTransicao[$j][4]<>'λ'){
+                    $quantS=strlen($funcaoTransicao[$j][4]);
+                    $simbol=str_split($funcaoTransicao[$j][4]);
+                    for($n=0;$n<$quantS;$n++){                        
+                        $pilha->push($simbol[0]); 
+                    }                     
+                } 
+                $topoDaPilha=$pilha->peek();//insere o topo da pilha no topoDaPilha   
+                $i=next($palavra);  
+                
+               
+            }else{
+                echo "<script>alert('REJEITA');</script>";
+                return;                
+            }            
+        }              
+        if($pilha->isEmpty()){//ok, se pilha for vasia: true ou false
+            echo "<script>alert('ACEITA');</script>";
+            return;
+        }else {//senao, rejeita
+            echo "<script>alert('REJEITA');</script>";
+            return;            
+        }        
     }
     
-    
-    function testeAP ($base, $estadoInicial, $palavra, $funcaoTransicao, $quantidadePalavra, $quantidadeT){
-        
+    function testeAP ($base, $estadoInicial, $palavra, $funcaoTransicao, $quantidadePalavra, $quantidadeT){        
         $pilha = new stack();// gera uma pilha
         $estadoAtual=$estadoInicial;//Estado atual recebe o estado incial
         $i='';
@@ -122,8 +170,6 @@
             return;            
         }    
     }
-    
-    
     echo '<!DOCTYPE html>';
     echo '<html lang="en">';
     echo '<head>';
@@ -188,11 +234,6 @@
     echo '<span class="input-group-text">&Beta;=</span>';
     echo '</div>';
     echo '<input type="text" class="form-control" id="base" value="'.$baseForm.'" name="base" readonly="readonly">';
-    echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-    echo '<div class="input-group-prepend">';
-    echo '<span class="input-group-text">QT=</span>';
-    echo '</div>';
-    echo '<input type="text" class="form-control" id="quantidadeT" value="'.$quantidadeTForm.'" name="quantidadeT" readonly="readonly">';
     echo '</div>';
     echo '<h3>Função de Transição</h3>';
     for($i = 0; $i < $quantidadeTForm; $i++){
@@ -204,10 +245,8 @@
         echo ''.$funcaoTransicao[$i][$j+2].')&nbsp=&nbsp';    
         echo '('.$funcaoTransicao[$i][$j+3].',&nbsp';    
         echo ''.$funcaoTransicao[$i][$j+4].')';   
-        echo '</div>';                 
-        
+        echo '</div>';
     }
-    
     echo '</div>';   
     echo '</body>';
     echo '</html>';
