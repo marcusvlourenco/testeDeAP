@@ -58,6 +58,12 @@
             echo "<script>window.history.back()</script>";//retorna para a pagina anterior
         }
         for($i=0;$i<$tamA;$i++){
+            
+            if(substr_count($alfabeto, $alfabetoArray[$i])>1){
+                echo "<script>alert('REJEITADO ALFABETO INSERIDO, O ALFABETO NÃO DEVE SER REPETIDO!');</script>";//retorna mensagem
+                echo "<script>window.history.back()</script>";//retorna para a pagina anterior
+                
+            }  
             if(($i % 2)==0){
                 if(!ctype_lower($alfabetoArray[$i])){//teste se simbolo da palavra é minusculo
                     if(($alfabetoArray[$i]<>'0')&&($alfabetoArray[$i]<>'1')){//se é 1 ou 0

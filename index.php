@@ -5,6 +5,7 @@
     echo '<title>AP - Trabalho</title>';
     echo '<meta charset="utf-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+    echo '<link rel="sortcut icon" href="arquivos/img/images.jpg" type="image/jpg" />';
     echo '<link href="arquivos/css/bootstrap.css" rel="stylesheet" type="text/css"/>';
     echo '<script src="arquivos/js/bootstrap.min.js" type="text/javascript"></script>';
     echo '<script src="arquivos/js/jquery.min.js" type="text/javascript"></script>';
